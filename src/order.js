@@ -2,8 +2,8 @@
 //   Show menus of tea shops
 //
 // Commands:
-//   drinks - 看有哪些飲料店
-//   drinks 飲料店 - 有個飲料店的菜單
+//   我要訂飲料
+//   截止
 //
 // Author:
 //    Candy
@@ -12,13 +12,13 @@
 import shopList from './utils/drinks';
 
 export default (robot) => {
-  robot.hear(/^drinks$/i, (res) => {
+  robot.hear(/^我要訂飲料$/i, (res) => {
     const result = Object.keys(shopList).join('.');
-    res.send(result);
+    res.send(`要訂哪間 ${result}`);
   });
 
   robot.hear(/drinks (.*)/i, (res) => {
-    const result = '◢▆▅▄▃-崩╰(〒皿〒)╯潰-▃▄▅▆◣';
+    const result = 'drink water!!!';
     res.send(result);
   });
 };
