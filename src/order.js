@@ -9,16 +9,11 @@
 //    Candy
 //
 
-import shopList from './utils/drinks';
+import shopList from '../utils/drinks';
 
 export default (robot) => {
-  robot.hear(/^我要訂飲料$/i, (res) => {
-    const result = Object.keys(shopList).join('.');
+  robot.hear(/我要訂飲料/i, (res) => {
+    const result = Object.keys(shopList).join('、');
     res.send(`要訂哪間 ${result}`);
-  });
-
-  robot.hear(/drinks (.*)/i, (res) => {
-    const result = 'drink water!!!';
-    res.send(result);
   });
 };

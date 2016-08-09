@@ -9,7 +9,7 @@
 //    Candy
 //
 
-import shopList from './utils/drinks';
+import shopList from '../utils/drinks';
 
 export default (robot) => {
   robot.hear(/^drinks$/i, (res) => {
