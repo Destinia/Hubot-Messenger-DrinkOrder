@@ -1,0 +1,8 @@
+{
+  "parser": "babel-eslint",
+  "extends": "yoctol-base",
+  "env": {
+    "node": true,
+    "mocha": true
+  }
+}
