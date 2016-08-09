@@ -1,5 +1,3 @@
-
-
 // Description:
 //   Show menus of tea shops
 //
@@ -10,14 +8,22 @@
 // Author:
 //    Candy
 //
-export default (robot => {
-  robot.hear(/^drinks$/i, res => {
-    const result = 'drink water!!!';
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+exports.default = function (robot) {
+  robot.hear(/^drinks$/i, function (res) {
+    var result = 'drink water!!!';
     res.send(result);
   });
 
-  robot.hear(/drinks (.*)/i, res => {
-    const result = 'drink water!!!';
+  robot.hear(/drinks (.*)/i, function (res) {
+    var result = 'drink water!!!';
     res.send(result);
   });
-});
+};
+
+module.exports = exports['default'];
