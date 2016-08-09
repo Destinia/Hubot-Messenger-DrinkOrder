@@ -9,11 +9,11 @@
 //    Candy
 //
 
-import shopList from '../utils/drinks';
+import shopsList from '../utils/drinks';
 
 export default (robot) => {
   robot.hear(/^drinks$/i, (res) => {
-    const result = Object.keys(shopList).join('.');
+    const result = Object.keys(shopsList).join('.');
     res.send(result);
   });
 
