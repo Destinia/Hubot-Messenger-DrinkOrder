@@ -74,7 +74,7 @@ export default (robot) => {
 
   robot.hear(/怎麼訂飲料/, (res) => {
     res.send(
-      '我要訂飲料 - 列出現有飲料店\n' +
+      '\n我要訂飲料 - 列出現有飲料店\n' +
       '[飲料] [甜度] [冰塊] - 飲料 甜度 冰塊\n' +
       '幫[誰][點|訂] [飲料] [甜度] [冰塊]\n' +
       '取消 - 取消自己的訂單\n' +
@@ -94,7 +94,8 @@ export default (robot) => {
     const shopName = res.match[1];
     if (shopsList[shopName]) {
       if (ordering()) {
-        res.send('不要再訂了');
+        res.send('不要再訂了')
+        ;
       } else {
         startOrder(shopName, res.message.user.name);
         res.send(drinks2String(shopsList[shopName]));
@@ -105,7 +106,7 @@ export default (robot) => {
     }
   });
 
-  robot.hear(/^(\S*) .*([全半少微無去][糖冰]).*([全半少微無去][糖冰])/, (res) => {
+  robot.hear(/^(\S*)\s+([全半少微無去][糖冰])\s*([全半少微無去][糖冰])/, (res) => {
     if (ordering()) {
       const name = res.message.user.name;
       const oldOrder = list().find(o => o.name === name);
@@ -124,7 +125,7 @@ export default (robot) => {
     }
   });
 
-  robot.hear(/幫(\S*)[訂點] (\S*) ([全半少微無][糖冰]) ([全半少微無][糖冰])/, (res) => {
+  robot.hear(/幫\s?(\S*)[訂點]?\s(\S*)\s.*([全半少微無去][糖冰]).*([全半少微無去][糖冰])/, (res) => {
     if (ordering()) {
       const name = res.match[1];
       const oldOrder = list().find(o => o.name === name);
@@ -143,7 +144,7 @@ export default (robot) => {
     }
   });
 
-  robot.hear(/取消/, (res) => {
+  robot.hear(/^取消$/, (res) => {
     if (ordering()) {
       const cancelOrder = list().find(o => o.name === res.message.user.name);
       if (cancelOrder) {
@@ -155,7 +156,7 @@ export default (robot) => {
     }
   });
 
-  robot.hear(/截止/, (res) => {
+  robot.hear(/^截止$/g, (res) => {
     if (ordering()) {
       if (res.message.user.name === getInitiator()) {
         res.send(`${listMatch()}${getInitiator()}電話已經準備好了 ${getTele()}`);

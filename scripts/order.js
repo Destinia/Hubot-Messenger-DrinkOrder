@@ -139,7 +139,7 @@ exports.default = function (robot) {
   };
 
   robot.hear(/怎麼訂飲料/, function (res) {
-    res.send('我要訂飲料 - 列出現有飲料店\n' + '[飲料] [甜度] [冰塊] - 飲料 甜度 冰塊\n' + '幫[誰][點|訂] [飲料] [甜度] [冰塊]\n' + '取消 - 取消自己的訂單\n' + '統計 - 看所有訂單\n' + '----------主揪專用---------\n' + '訂[哪家] - 開團\n' + '截止 - 截止');
+    res.send('\n我要訂飲料 - 列出現有飲料店\n' + '[飲料] [甜度] [冰塊] - 飲料 甜度 冰塊\n' + '幫[誰][點|訂] [飲料] [甜度] [冰塊]\n' + '取消 - 取消自己的訂單\n' + '統計 - 看所有訂單\n' + '----------主揪專用---------\n' + '訂[哪家] - 開團\n' + '截止 - 截止');
   });
 
   robot.hear(/我要訂飲料/, function (res) {
@@ -165,7 +165,7 @@ exports.default = function (robot) {
     }
   });
 
-  robot.hear(/^(\S*) .*([全半少微無][糖冰]).*([全半少微無][糖冰])/, function (res) {
+  robot.hear(/^(\S*)\s+([全半少微無去][糖冰])\s+([全半少微無去][糖冰])/, function (res) {
     if (ordering()) {
       var _ret = function () {
         var name = res.message.user.name;
@@ -194,7 +194,7 @@ exports.default = function (robot) {
     }
   });
 
-  robot.hear(/幫(\S*)[訂點] (\S*) ([全半少微無][糖冰]) ([全半少微無][糖冰])/, function (res) {
+  robot.hear(/幫\s?(\S*)[訂點]?\s(\S*)\s.*([全半少微無去][糖冰]).*([全半少微無去][糖冰])/, function (res) {
     if (ordering()) {
       var _ret2 = function () {
         var name = res.match[1];
@@ -223,7 +223,7 @@ exports.default = function (robot) {
     }
   });
 
-  robot.hear(/取消/, function (res) {
+  robot.hear(/^取消$/, function (res) {
     if (ordering()) {
       var cancelOrder = list().find(function (o) {
         return o.name === res.message.user.name;
@@ -237,7 +237,7 @@ exports.default = function (robot) {
     }
   });
 
-  robot.hear(/截止/, function (res) {
+  robot.hear(/^截止$/g, function (res) {
     if (ordering()) {
       if (res.message.user.name === getInitiator()) {
         res.send('' + listMatch() + getInitiator() + '電話已經準備好了 ' + getTele());
