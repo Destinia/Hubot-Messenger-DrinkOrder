@@ -1,18 +1,28 @@
 // Description:
-//   Show menus of tea shops
+//   Order Drinks
 //
 // Commands:
 //   我要訂飲料
 //   截止
+//   訂XXX
+//   
 //
 // Author:
-//    Candy
+//    Candy Allen
 //
 'use strict';
+
+var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+
+var _typeof = typeof Symbol === "function" && _typeof2(Symbol.iterator) === "symbol" ? function (obj) {
+  return typeof obj === "undefined" ? "undefined" : _typeof2(obj);
+} : function (obj) {
+  return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj === "undefined" ? "undefined" : _typeof2(obj);
+};
 
 var _extends = Object.assign || function (target) {
   for (var i = 1; i < arguments.length; i++) {
@@ -54,14 +64,24 @@ exports.default = function (robot) {
   robot.brain.set('orders', []);
   robot.brain.set('isOrdering', false);
 
-  var startOrder = function startOrder(shopName) {
+  var startOrder = function startOrder(shopName, initiator) {
     robot.brain.set('isOrdering', true);
     robot.brain.set('orders', []);
     robot.brain.set('menu', _drinks2.default[shopName]);
+    robot.brain.set('telephone', _drinks2.default.telephone[shopName]);
+    robot.brain.set('initiator', initiator);
   };
 
   var getMenu = function getMenu() {
     return robot.brain.get('menu');
+  };
+
+  var getTele = function getTele() {
+    return robot.brain.get('telephone');
+  };
+
+  var getInitiator = function getInitiator() {
+    return robot.brain.get('initiator');
   };
 
   var ordering = function ordering() {
@@ -87,6 +107,9 @@ exports.default = function (robot) {
   var clear = function clear() {
     robot.brain.set('orders', []);
     robot.brain.set('isOrdering', false);
+    robot.brain.set('menu', []);
+    robot.brain.set('telephone', '');
+    robot.brain.set('initiator', '');
   };
 
   var listMatch = function listMatch() {
@@ -119,7 +142,9 @@ exports.default = function (robot) {
   };
 
   robot.hear(/我要訂飲料/, function (res) {
-    var result = Object.keys(_drinks2.default).join('、');
+    var result = Object.keys(_drinks2.default).filter(function (n) {
+      return n !== 'telephone';
+    }).join('、');
     res.send('要訂哪間 ' + result);
   });
 
@@ -129,50 +154,108 @@ exports.default = function (robot) {
       if (ordering()) {
         res.send('不要再訂了');
       } else {
-        startOrder(shopName);
+        startOrder(shopName, res.message.user.name);
         res.send(drinks2String(_drinks2.default[shopName]));
       }
     } else {
-      res.send('沒有' + shopName + ' ◢▆▅▄▃-崩╰(〒皿〒)╯潰-▃▄▅▆◣\n\n        訂 ' + Object.keys(_drinks2.default).join('、'));
+      res.send('沒有' + shopName + ' ◢▆▅▄▃-崩╰(〒皿〒)╯潰-▃▄▅▆◣\n\n        訂 ' + Object.keys(_drinks2.default).filter(function (n) {
+        return n !== 'telephone';
+      }).join('、'));
     }
   });
 
-  robot.hear(/(.*) (.[糖冰]) (.[糖冰])/, function (res) {
+  robot.hear(/^(\S*) ([全半少微無][糖冰]) ([全半少微無][糖冰])/, function (res) {
     if (ordering()) {
-      var sugar = res.match[2];
-      var ice = res.match[3];
-      var name = res.message.user.name;
-      console.log(getMenu().find(function (d) {
-        return d.id === +res.match[1];
-      }));
-      var drink = res.match[1];
-      order({ sugar: sugar, ice: ice, name: name, drink: drink });
-      res.send(name + ' 訂的是 ' + drink + ' ' + sugar + ' ' + ice);
+      var _ret = function () {
+        var name = res.message.user.name;
+        var oldOrder = list().find(function (o) {
+          return o.name === name;
+        });
+        if (oldOrder) {
+          res.send(name + '你已經點了 ' + oldOrder.drink + ' ' + oldOrder.sugar + ' ' + oldOrder.ice);
+          return {
+            v: void 0
+          };
+        }
+        var sugar = res.match[2].search('糖') >= 0 ? res.match[2] : res.match[3];
+        var ice = res.match[3].search('冰') >= 0 ? res.match[3] : res.match[2];
+        var id2drink = getMenu().find(function (d) {
+          return d.id === +res.match[1];
+        });
+        var drink = id2drink ? id2drink.name : res.match[1];
+        order({ sugar: sugar, ice: ice, name: name, drink: drink });
+        res.send(name + ' 訂的是 ' + drink + ' ' + sugar + ' ' + ice);
+      }();
+
+      if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;
+    } else {
+      res.send('不要偷訂飲料');
+    }
+  });
+
+  robot.hear(/幫(\S*)點 (\S*) ([全半少微無][糖冰]) ([全半少微無][糖冰])/, function (res) {
+    if (ordering()) {
+      var _ret2 = function () {
+        var name = res.match[1];
+        var oldOrder = list().find(function (o) {
+          return o.name === name;
+        });
+        if (oldOrder) {
+          res.send(name + '他已經點了 ' + oldOrder.drink + ' ' + oldOrder.sugar + ' ' + oldOrder.ice);
+          return {
+            v: void 0
+          };
+        }
+        var sugar = res.match[3].search('糖') >= 0 ? res.match[3] : res.match[4];
+        var ice = res.match[4].search('冰') >= 0 ? res.match[4] : res.match[3];
+        var id2drink = getMenu().find(function (d) {
+          return d.id === +res.match[2];
+        });
+        var drink = id2drink ? id2drink.name : res.match[2];
+        order({ sugar: sugar, ice: ice, name: name, drink: drink });
+        res.send(name + ' 訂的是 ' + drink + ' ' + sugar + ' ' + ice);
+      }();
+
+      if ((typeof _ret2 === 'undefined' ? 'undefined' : _typeof(_ret2)) === "object") return _ret2.v;
     } else {
       res.send('不要偷訂飲料');
     }
   });
 
   robot.hear(/取消/, function (res) {
-    var cancelOrder = list().find(function (o) {
-      return o.name === res.message.user.name;
-    });
-    if (cancelOrder) {
-      res.send('已經取消 ' + res.message.user.name + ' 訂的' + cancelOrder.drink);
-      cancel(res.message.user.name);
-    } else {
-      res.send('你哪位？');
+    if (ordering()) {
+      var cancelOrder = list().find(function (o) {
+        return o.name === res.message.user.name;
+      });
+      if (cancelOrder) {
+        res.send('已經取消 ' + res.message.user.name + ' 訂的' + cancelOrder.drink);
+        cancel(res.message.user.name);
+      } else {
+        res.send('你哪位？');
+      }
     }
   });
 
   robot.hear(/截止/, function (res) {
-    res.send(listMatch());
-    clear();
+    if (res.message.user.name === getInitiator()) {
+      res.send('' + listMatch() + getInitiator() + '電話已經準備好了 ' + getTele());
+      clear();
+    } else {
+      res.send('叫' + getInitiator() + '出來講');
+    }
   });
 
   robot.hear(/統計/, function (res) {
-    var orders = list();
-    res.send(orders2String(orders));
+    if (ordering()) {
+      var orders = list();
+      if (orders.length) {
+        res.send(orders2String(orders));
+      } else {
+        res.send('你是不是邊緣人 幫QQ');
+      }
+    } else {
+      res.send('先別急好嗎');
+    }
   });
 };
 
