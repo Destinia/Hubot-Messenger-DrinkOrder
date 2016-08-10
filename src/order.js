@@ -105,7 +105,7 @@ export default (robot) => {
     }
   });
 
-  robot.hear(/^(\S*) ([全半少微無][糖冰]) ([全半少微無][糖冰])/, (res) => {
+  robot.hear(/^(\S*) .*([全半少微無去][糖冰]).*([全半少微無去][糖冰])/, (res) => {
     if (ordering()) {
       const name = res.message.user.name;
       const oldOrder = list().find(o => o.name === name);

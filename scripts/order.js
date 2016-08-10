@@ -2,10 +2,7 @@
 //   Order Drinks
 //
 // Commands:
-//   我要訂飲料
-//   截止
-//   訂XXX
-//   
+//   怎麼訂飲料
 //
 // Author:
 //    Candy Allen
@@ -141,6 +138,10 @@ exports.default = function (robot) {
     }, '\n');
   };
 
+  robot.hear(/怎麼訂飲料/, function (res) {
+    res.send('我要訂飲料 - 列出現有飲料店\n' + '[飲料] [甜度] [冰塊] - 飲料 甜度 冰塊\n' + '幫[誰][點|訂] [飲料] [甜度] [冰塊]\n' + '取消 - 取消自己的訂單\n' + '統計 - 看所有訂單\n' + '----------主揪專用---------\n' + '訂[哪家] - 開團\n' + '截止 - 截止');
+  });
+
   robot.hear(/我要訂飲料/, function (res) {
     var result = Object.keys(_drinks2.default).filter(function (n) {
       return n !== 'telephone';
@@ -164,7 +165,7 @@ exports.default = function (robot) {
     }
   });
 
-  robot.hear(/^(\S*) ([全半少微無][糖冰]) ([全半少微無][糖冰])/, function (res) {
+  robot.hear(/^(\S*) .*([全半少微無][糖冰]).*([全半少微無][糖冰])/, function (res) {
     if (ordering()) {
       var _ret = function () {
         var name = res.message.user.name;
@@ -193,7 +194,7 @@ exports.default = function (robot) {
     }
   });
 
-  robot.hear(/幫(\S*)點 (\S*) ([全半少微無][糖冰]) ([全半少微無][糖冰])/, function (res) {
+  robot.hear(/幫(\S*)[訂點] (\S*) ([全半少微無][糖冰]) ([全半少微無][糖冰])/, function (res) {
     if (ordering()) {
       var _ret2 = function () {
         var name = res.match[1];
@@ -237,11 +238,13 @@ exports.default = function (robot) {
   });
 
   robot.hear(/截止/, function (res) {
-    if (res.message.user.name === getInitiator()) {
-      res.send('' + listMatch() + getInitiator() + '電話已經準備好了 ' + getTele());
-      clear();
-    } else {
-      res.send('叫' + getInitiator() + '出來講');
+    if (ordering()) {
+      if (res.message.user.name === getInitiator()) {
+        res.send('' + listMatch() + getInitiator() + '電話已經準備好了 ' + getTele());
+        clear();
+      } else {
+        res.send('叫' + getInitiator() + '出來講');
+      }
     }
   });
 
