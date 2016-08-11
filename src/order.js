@@ -125,7 +125,7 @@ export default (robot) => {
     }
   });
 
-  robot.hear(/幫\s?(\S*)[訂點]?\s(\S*)\s.*([全半少微無去][糖冰]).*([全半少微無去][糖冰])/, (res) => {
+  robot.hear(/幫(\S*[^訂點])[訂點]?\s(\S*)\s.*([全半少微無去][糖冰]).*([全半少微無去][糖冰])/, (res) => {
     if (ordering()) {
       const name = res.match[1];
       const oldOrder = list().find(o => o.name === name);
